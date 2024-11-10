@@ -1,0 +1,67 @@
+3 daa bellman
+
+#include <iostream>
+#include <vector>
+#include <climits>
+using namespace std;
+struct Edge 
+{
+    int src, dest, weight;
+};
+bool BellmanFord(const vector<Edge>& edges, int V, int E, int src, vector<int>& dist) 
+{
+    dist[src] = 0;
+    for (int i = 1; i < V; ++i) 
+    {
+        for (const auto& edge : edges) 
+        {
+            int u = edge.src;
+            int v = edge.dest;
+            int weight = edge.weight;
+
+            if (dist[u] != INT_MAX && dist[u] + weight < dist[v]) 
+            {
+                dist[v] = dist[u] + weight;
+            }
+        }
+    }
+    for (const auto& edge : edges) 
+    {
+        int u = edge.src;
+        int v = edge.dest;
+        int weight = edge.weight;
+        if (dist[u] != INT_MAX && dist[u] + weight < dist[v]) 
+        {
+            cout << "Graph contains negative weight cycle" << endl;
+            return false;
+        }
+    }
+    return true;
+}
+int main() 
+{
+    int V, E, src;
+    cout << "Enter the number of vertices: ";
+    cin >> V;
+    cout << "Enter the number of edges: ";
+    cin >> E;
+    vector<Edge> edges(E);
+    cout << "Enter the edges (source, destination, weight):" << endl;
+    for (int i = 0; i < E; ++i) 
+    {
+        cin >> edges[i].src >> edges[i].dest >> edges[i].weight;
+    }
+    cout << "Enter the source vertex: ";
+    cin >> src;
+    vector<int> dist(V, INT_MAX);
+    if (BellmanFord(edges, V, E, src, dist)) 
+    {
+        cout << "Vertex Distance from Source" << endl;
+        for (int i = 0; i < V; ++i) 
+        {
+            cout << i << "\t\t" << dist[i] << endl;
+        }
+    }
+    return 0;
+}
+

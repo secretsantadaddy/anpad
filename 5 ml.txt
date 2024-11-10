@@ -1,0 +1,41 @@
+#Mall_Customer
+
+from pandas import pd 
+----------------------
+import pandas as pd 
+import matplotlib.pyplot as plt
+-----------------------
+df = pd.read_csv('Mall_Customers.csv')
+-------------------------------
+df
+-------------------------
+x = df.iloc[:,3:]
+--------------------
+x
+---------------------
+plt.title('Unclustered Data')
+plt.xlabel('Annual Income')
+plt.ylabel('Spending Score')
+plt.scatter(x['Annual Income (k$)'], x['Spending Score (1-100)'])
+--------------------------------
+from sklearn.cluster import KMeans, AgglomerativeClustering
+------------------------------
+km = KMeans(n_clusters=3)
+-----------------------------
+x.shape
+-------------------------
+km.fit_predict(x)
+--------------------------
+km.inertia_
+------------------------
+sse =[]
+for k in range(1,16):
+    km = KMeans(n_clusters=k)
+    km.fit_predict(x)
+    sse.append(km.inertia_)
+-----------------------------
+plt.title('Elbow Method')
+plt.xlabel('value of K')
+plt.ylabel('SSE')
+plt.plot(range(1,16),sse, marker='.')
+------------------------------

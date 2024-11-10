@@ -1,0 +1,85 @@
+5 daa tsp
+
+#include <iostream>
+#include <climits>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+int n;
+int dist[10][10];
+int final_path[10];
+int final_res = INT_MAX;
+
+int calculateBound(int curr_path[], int level, int curr_cost) {
+	int bound = curr_cost;
+	for (int i = 0; i < n; i++) {
+		if (curr_path[i] == -1) { 
+			int min_edge = INT_MAX;
+			for (int j = 0; j < n; j++) {
+				if (curr_path[j] == -1 && dist[i][j] < min_edge) {
+					min_edge = dist[i][j];
+				}
+			}
+			bound += min_edge;
+		}
+	}
+	return bound;
+}
+
+void branchAndBound(int curr_path[], bool visited[], int level, int curr_cost) {
+	if (level == n) {
+		int final_cost = curr_cost + dist[curr_path[level-1]][curr_path[0]];
+		if (final_cost < final_res) {
+			final_res = final_cost;
+			for (int i = 0; i < n; i++) {
+				final_path[i] = curr_path[i];
+			}
+			final_path[n] = curr_path[0];  
+		}
+		return;
+	}
+	for (int i = 0; i < n; i++) {
+		if (!visited[i] && dist[curr_path[level-1]][i] != INT_MAX) {
+			curr_path[level] = i;
+			visited[i] = true;
+			int bound = calculateBound(curr_path, level+1, curr_cost + dist[curr_path[level-1]][i]);
+			if (bound < final_res) {
+				branchAndBound(curr_path, visited, level+1, curr_cost + dist[curr_path[level-1]][i]);
+			}
+			visited[i] = false;
+			curr_path[level] = -1;
+		}
+	}
+}
+int main() {
+	cout << "Enter the number of cities: ";
+	cin >> n;
+	cout << "Enter the distance matrix (enter -1 for no direct path):\n";
+	for (int i = 0; i < n; i++) {
+		for (int j = 0; j < n; j++) {
+			cin >> dist[i][j];
+			if (dist[i][j] == -1) {
+				dist[i][j] = INT_MAX;
+			}
+		}
+	}
+	
+	int curr_path[n+1];  
+	bool visited[n];
+
+	fill(curr_path, curr_path + n, -1);
+	fill(visited, visited + n, false);
+
+	curr_path[0] = 0;  
+	visited[0] = true;
+
+	branchAndBound(curr_path, visited, 1, 0);
+
+	cout << "Optimal Path: ";
+	for (int i = 0; i < n; i++) {
+		cout << final_path[i] + 1 << " "; 
+	}
+	cout << "\nMinimum Cost: " << final_res << endl;
+	return 0;
+}

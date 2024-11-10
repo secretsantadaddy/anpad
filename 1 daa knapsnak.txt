@@ -1,0 +1,67 @@
+1 daa knapsnak
+
+#include <iostream>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+struct Item 
+{
+    int profit;
+    int weight;
+
+    Item(int p, int w) : profit(p), weight(w) {}
+};
+
+bool cmp(const Item& a, const Item& b) 
+{
+    return (static_cast<double>(a.profit) / a.weight) > (static_cast<double>(b.profit) / b.weight);
+}
+
+double fractionalKnapsack(vector<Item>& items, int knapsack_capacity) 
+{
+    sort(items.begin(), items.end(), cmp);
+    int curWeight = 0; 
+    double totalProfit = 0.0; 
+
+    for (const auto& item : items) 
+    {
+        if (curWeight + item.weight <= knapsack_capacity) 
+        {
+            curWeight += item.weight;
+            totalProfit += item.profit;
+        } else 
+        {
+            int remain = knapsack_capacity - curWeight;
+            totalProfit += item.profit * (static_cast<double>(remain) / item.weight);
+            break;
+        }
+    }
+
+    return totalProfit;
+}
+
+int main() 
+{
+    int n, knapsack_capacity;
+    cout << "Enter the number of items: ";
+    cin >> n;
+    vector<Item> items;
+
+    for (int i = 0; i < n; ++i) 
+    {
+        int profit, weight;
+        cout << "Enter profit and weight for item " << (i + 1) << ": ";
+        cin >> profit >> weight;
+        items.emplace_back(profit, weight);
+    }
+
+    cout << "Enter the capacity of the knapsack: ";
+    cin >> knapsack_capacity;
+
+    double maxProfit = fractionalKnapsack(items, knapsack_capacity);
+    cout << "Maximum profit earned = " << maxProfit << endl;
+
+    return 0;
+}
